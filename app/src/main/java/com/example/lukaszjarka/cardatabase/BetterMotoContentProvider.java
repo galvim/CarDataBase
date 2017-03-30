@@ -8,8 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import com.example.lukaszjarka.cardatabase.add.AddNewCarActivity;
+
 public class BetterMotoContentProvider extends ContentProvider {
     public static final String AUTHORITY = "com.example.lukaszjarka.cardatabase";
+    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     private MotoDatabaseOpenHelper openHelper;
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -24,6 +27,11 @@ public class BetterMotoContentProvider extends ContentProvider {
 
     private Cursor cursor;
     private long id;
+    private String type;
+
+    public BetterMotoContentProvider(AddNewCarActivity addNewCarActivity) {
+
+    }
 
 
     @Override
@@ -58,7 +66,18 @@ public class BetterMotoContentProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(Uri uri) {
-        return null;
+
+        switch(uriMatcher.match(uri)){
+            case CARS_SINGLE_ITEM: {
+                type = "vnd.android.cursor.item/vnd.com.example.lukaszjarka.cardatabase.cars";
+                break;
+            }
+            case CARS_MULTIPLE_ITEM: {
+                type = "vnd.android.cursor.dir/vnd.com.example.lukaszjarka.cardatabase.cars";
+
+            }
+        }
+        return type;
     }
 
     @Nullable
@@ -78,7 +97,14 @@ public class BetterMotoContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        SQLiteDatabase writableDataBase = openHelper.getWritableDatabase();
+        int deletedItems = 0;
+        if (uriMatcher.match(uri) == CARS_SINGLE_ITEM) {
+           deletedItems =  writableDataBase.delete(CarsTableContract.TABLE_NAME,CarsTableContract._ID + "= ?", new String[]{uri.getLastPathSegment()});
+
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return deletedItems;
     }
 
     @Override

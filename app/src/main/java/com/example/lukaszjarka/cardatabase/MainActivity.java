@@ -57,10 +57,7 @@ public class MainActivity extends AppCompatActivity {
        Cursor cursor =  getContentResolver().query(Uri.parse("content://com.example.lukaszjarka.cardatabase/CARS/1"), null,null,null,null);
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(CarsTableContract.COLUMN_MAKE, " Opel");
-        contentValues.put(CarsTableContract.COLUMN_MODEL, "Corsa");
-        contentValues.put(CarsTableContract.COLUMN_IMAGE, "");
-        contentValues.put(CarsTableContract.COLUMN_YEAR, "1999");
+
 
         getContentResolver().insert(Uri.parse("content://com.example.lukaszjarka.cardatabase/CARS"), contentValues);
 
